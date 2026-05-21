@@ -37,16 +37,52 @@ async function fetchHenrikFeatured() {
   }
 
   const json = await res.json();
-  const bundleName = json?.data?.FeaturedBundle?.Bundle?.DataAssetID || "Unknown Bundle";
-  const offers = json?.data?.FeaturedBundle?.Bundle?.Items || [];
+
+  const featured = json?.data?.FeaturedBundle || json?.data?.featured_bundle || json?.data || {};
+  const bundle =
+    featured?.Bundle ||
+    featured?.bundle ||
+    featured?.FeaturedBundle ||
+    featured?.featuredBundle ||
+    {};
+
+  const bundleName =
+    bundle?.Name ||
+    bundle?.name ||
+    bundle?.DataAssetID ||
+    bundle?.data_asset_id ||
+    featured?.BundleName ||
+    featured?.bundle_name ||
+    "Unknown Bundle";
+
+  const offers =
+    bundle?.Items ||
+    bundle?.items ||
+    featured?.Items ||
+    featured?.items ||
+    json?.data?.items ||
+    [];
 
   return {
     title: "VALORANT 每日商店更新（Featured）",
     subtitle: `Bundle: ${bundleName}`,
     offers: offers.map((x) => ({
-      name: x?.Item?.ItemID || "Unknown Item",
-      price: x?.DiscountedPrice ?? x?.BasePrice ?? "?",
-      discount: x?.DiscountPercent ?? 0
+      name:
+        x?.Item?.Name ||
+        x?.Item?.name ||
+        x?.Item?.ItemID ||
+        x?.Item?.item_id ||
+        x?.name ||
+        "Unknown Item",
+      price:
+        x?.DiscountedPrice ??
+        x?.discounted_price ??
+        x?.BasePrice ??
+        x?.base_price ??
+        x?.Price ??
+        x?.price ??
+        "?",
+      discount: x?.DiscountPercent ?? x?.discount_percent ?? x?.discount ?? 0
     }))
   };
 }
