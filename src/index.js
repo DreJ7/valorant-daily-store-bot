@@ -38,6 +38,22 @@ async function fetchHenrikFeatured() {
 
   const json = await res.json();
 
+  if (Array.isArray(json?.data) && json.data.length > 0) {
+    const bundle = json.data[0];
+    return {
+      title: "VALORANT 每日商店更新（Featured）",
+      subtitle: `Bundle UUID: ${bundle?.bundle_uuid || "Unknown Bundle"}`,
+      offers: (bundle?.items || []).map((x) => ({
+        name: x?.name || "Unknown Item",
+        price: x?.discounted_price ?? x?.base_price ?? "?",
+        discount:
+          typeof x?.discount_percent === "number"
+            ? Math.round(x.discount_percent * 100)
+            : x?.discount ?? 0
+      }))
+    };
+  }
+
   const featured = json?.data?.FeaturedBundle || json?.data?.featured_bundle || json?.data || {};
   const bundle =
     featured?.Bundle ||
