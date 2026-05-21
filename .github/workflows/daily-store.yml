@@ -1,0 +1,29 @@
+﻿name: Daily Valorant Store Push
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 0 * * *"
+
+jobs:
+  post-store:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run bot
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          STORE_PROVIDER: ${{ secrets.STORE_PROVIDER }}
+          HENRIK_API_KEY: ${{ secrets.HENRIK_API_KEY }}
+          CUSTOM_STORE_URL: ${{ secrets.CUSTOM_STORE_URL }}
+          CUSTOM_STORE_AUTH_HEADER: ${{ secrets.CUSTOM_STORE_AUTH_HEADER }}
+          CUSTOM_STORE_AUTH_VALUE: ${{ secrets.CUSTOM_STORE_AUTH_VALUE }}
+        run: node src/index.js
